@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assignment 4</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+<style>
+
+body {
+  background-color: black;
+}
+
+
+
+p {
+  margin-left:20px;
+  color: green;
+}
+
+h1 {
+  color: green;
+  text-align: center;
+}
+
+h2 {
+  color: green;
+  text-align: center;
+}
+
+h3 {
+  color: green;
+  text-align: center;
+}
+
+
+
+pre {
+  margin-left:20px;
+  color: green;
+}
+
+ul {
+  
+  color: green;
+}
+
+
+ol {
+  margin-left:20px;
+  color: green;
+}
+
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  color: green;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  color: green;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+color: green;
+  background-color: #00008b;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<h1>CS408: Animation Software Design<br>
+Fall 2022</h1>
+
+<div class=WordSection1>
+
+<h1 align=center style='margin:0cm;margin-bottom:.0001pt;text-align:center'><span
+lang=EN-US style='font-size:16.0pt'>Assignment 4</span></h1>
+
+<h1 align=center style='margin:0cm;margin-bottom:.0001pt;text-align:center'><span
+lang=EN-US style='font-size:16.0pt'>Hierarchical Kinematic Models</span></h1>
+
+<h1 align=center style='margin:0cm;margin-bottom:.0001pt;text-align:center'><span
+lang=EN-US style='font-size:16.0pt'>Due: November 08, 2022</span></h1>
+<p class=MsoNormal>In this assignment, you will write a 3D graphics program to
+display hierarchical kinematic models. You can make use of a starter program
+provided with this assignment.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>1. Create a program to display a 3D wooden model. If working in C++/OpenGL, you can download the
+"simple model of a person" (Main.cpp, Main.h) from this assignment. </p>
+
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>The given model has a spherical head, a cylindrical neck, a
+cylindrical torso, a left leg made of two cylinders, and a left arm made of two
+cylinders. </p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>Your displayed model should have the above features plus (1)
+right arm, (2) right leg, (3) nose, (4) two ears, (5) two feet  on the end of
+the legs!, and (6) some other body part(s) of your choosing. </p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>Add motion to the right arm, right leg, two feet, and any
+other body part(s).</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>2. Draw the tree corresponding to the model corresponding to
+your program from question 1. Show the Constant, Variable, and Node
+transformations on the diagram. You do <u>not</u> have to show any transformations
+in the display_cylinder or display_* functions, where * is some body part. We
+will consider those transformations to be part of the objects. Your picture can be submitted as a neatly hand drawn picture or a picture drawn with some drawing software. Hand drawn pictures can be scanned as PDFs/JPGs and submitted to UR Courses.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>3. Construct a table with columns for the Node Index, Object
+Model (e.g., "Neck"), Parent Index, Constant Transformation, Variable
+Transformation, Node Transformation, and Child Indices for your program from
+question 1. See the example table in the lecture slides (but add more columns). For the Constant
+Transformation, you should have X, Y, and Z columns, and for the Variable
+Transformation, you should have one column that indicates whether the transform
+is Rx (meaning rotation around the X axis), Ry, or Rz and two other columns
+giving the minimum and maximum amounts of rotation that you think are
+reasonable for a human-like body. See also question 4. Submit the answer in a Word/txt/pdf/Excel file showing the table.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>4. Change the program from question 1 to use separate
+minimum and maximum values for every limb (instead of just giving them all minimum
+0 and maximum 45). Adjust the minimum and maximum values in your table for
+question 3 according to your experience of what a human body is capable of in
+these types of motions. Suggestion: add two arrays, one for max and one for
+min. For each joint, the figure should progress from its current setting to the
+maximum and then down to the minimum and then back to the maximum, etc.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>5. A <b>pose vector</b> gives the current values for the
+parameters of the Variable Transformations. For example, the angle by which the
+wooden figure is leaning forward its neck is given by theta[1] in the program.  Determine
+the pose vector corresponding to the following configurations:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'>a.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>pose
+0: figure standing straight with legs straight down and arms straight out;</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'>b.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>pose
+1: figure standing with upper right arm straight out and lower right arm turned
+straight up; right leg out in kicking motion;</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'>c.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>pose
+2: figure standing with upper left arm straight out and lower left arm turned
+straight up; lower part of right leg back</p>
+
+<p class=MsoNormal>Submit the answer in a
+Word/txt/pdf/Excel file showing three pose vectors.</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>6. Change the program from question 1 to perform animations
+between poses. Animation can be performed by gradually changing the angle
+parameters of the Variable Transformations between one pose and another and
+back and repeat.  Create three possible animations by setting the initial and
+final poses:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'>a.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>On
+input 'f', set one pose to be pose 0 and the other to be pose 1. </p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'>b.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>On
+input 'b', set one pose to be pose 0 and the other to be pose 2.</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'>c.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>Add
+more poses of your choice and choose a keyboard key to cause the figure to
+animate motion between those two poses.</p>
+
+<br><br><br><br><br><br><br><br>
+</body>
+</html>
