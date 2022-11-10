@@ -34,6 +34,7 @@ namespace
 	const unsigned int TARGET_FPS = 40;
 	double g_fps = TARGET_FPS;
 	int g_next_frame_time = 0;
+	int key = 0;
 	const bool SHOW_FPS = true;
 
 	const double NEAR_CLIP = 0.01;
@@ -60,43 +61,130 @@ namespace
 
 	// bone identifiers (bone ids)
 	const int LIMB_TORSO = 0;
-	const int LIMB_NECK = 1;
-	const int LIMB_HEAD = 2;
+	const int LIMB_UPPER_LEFT_LEG = 1;
+	const int LIMB_UPPER_RIGHT_LEG = 2;
 	const int LIMB_UPPER_LEFT_ARM = 3;
-	const int LIMB_UPPER_LEFT_LEG = 4;
-	const int LIMB_LOWER_LEFT_ARM = 5;
+	const int LIMB_UPPER_RIGHT_ARM = 4;
+	const int LIMB_NECK = 5;
 	const int LIMB_LOWER_LEFT_LEG = 6;
-	const int LIMB_UPPER_RIGHT_ARM = 7;
-	const int LIMB_UPPER_RIGHT_LEG = 8;
+	const int LIMB_LOWER_RIGHT_LEG = 7;
+	const int LIMB_LOWER_LEFT_ARM = 8;
 	const int LIMB_LOWER_RIGHT_ARM = 9;
-	const int LIMB_LOWER_RIGHT_LEG = 10;
+	const int LIMB_HEAD = 10;
 	const int LIMB_LEFT_FOOT = 11;
 	const int LIMB_RIGHT_FOOT = 12;
-	const int LIMB_NOSE = 13;
-	const int LIMB_LEFT_EAR = 14;
-	const int LIMB_RIGHT_EAR = 15;
+	const int LIMB_LEFT_EAR = 13;
+	const int LIMB_RIGHT_EAR = 14;
+	const int LIMB_NOSE = 15;
 	
 	const int LIMBCOUNT = 16;
 
 	// initial angle for all bones (in degrees)
 	float theta[LIMBCOUNT] =
 	{
-		 0.0, 10.0, 15.0, 20.0, 
-		30.0, 21.0, 11.0, 20.0, 30.0, 21.0, 11.0, 45.0, 45.0, 10.0, 15.0, 15.0
+		 0.0, 30.0, 30.0, 20.0, 
+		 20.0, 10.0, 11.0, 11.0, 21.0, 21.0, 15.0, 45.0, 45.0, 15.0, 15.0, 10.0
+
+	};
+
+	float pose0[LIMBCOUNT] =
+	{
+		0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+	};
+
+	float pose1[LIMBCOUNT] =
+	{
+		0.0, 0.0, 90.0, -90.0f, 
+		0.0, 45.0, 0.0, 0.0, 0.0, 90.0, -90.0f, 0.0, 0.0, 0.0, 0.0, 0.0
+	};
+
+	float pose2[LIMBCOUNT] =
+	{
+		0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 90.0, 90.0, 0.0, 0.0, 0.0, 45.0, 0.0, 0.0, 0.0
 	};
 
 	// amount by which each bone rotates per frame (in degrees)
-	float delta[LIMBCOUNT] =
+	/*float delta[LIMBCOUNT] =
 	{
 		0.2f, 0.4f, 0.6f, 0.8f, 
-		1.2f, 1.6f, 2.0f, 0.8f, 1.2f, 1.6f, 2.0f, 1.0, 1.0, 0.6, 0.8, 0.88
+		1.2f, 1.6f, 2.0f, 0.8f, 1.2f, 1.6f, 2.0f, 1.0f, 1.0f, 0.6f, 0.8f, 0.8f
+	};*/
+
+	float constantDelta[LIMBCOUNT] =
+	{
+		0.2f, 1.2f, 1.2f, 0.8f,
+		0.8f, 0.4f, 1.0f, 1.0f, 1.6f, 1.6f, 0.6f, 1.0f, 1.0f, 0.8f, 0.8f, 0.6f
 	};
 
-	/*float omega[LIMBCOUNTER] =
+	float delta[LIMBCOUNT] =
 	{
+		0.2f, 1.2f, 1.2f, 0.8f, 
+		0.8f, 0.4f, 1.0f, 1.0f, 1.6f, 1.6f, 0.6f, 1.0f, 1.0f, 0.8f, 0.8f, 0.6f
+	};
 
-	}*/
+	float MAX[LIMBCOUNT] =
+	{
+		0, 160, 160, 90, 90, 
+		70, 90, 90, 135, 135, 90, 45, 45, 0, 0, 0
+	};
 
+	float MIN[LIMBCOUNT] =
+	{
+		0, -45, -45, -90, -90, 
+		-70, 0, 0, 0, 0, -90, -10, -10, 0, 0, 0
+	};
+
+	void setPose0()
+	{
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = pose0[i];
+			delta[i] = 0.0;
+		}
+	}
+
+	void setPose1()
+	{
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = pose1[i];
+			delta[i] = 0.0;
+		}
+	}
+
+	void setPose2()
+	{
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = pose2[i];
+			delta[i] = 0.0;
+		}
+	}
+
+	void setPose0_1()
+	{
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = pose0[i];
+			MIN[i] = pose0[i];
+			MAX[i] = pose1[i];
+			if (pose0[i] - pose1[i] == 0)
+			{
+				delta[i] = 0;
+			}
+			else if (pose0[i] - pose1[i] > 0)
+			{
+				delta[i] = -constantDelta[i];
+			}
+			else
+			{
+				delta[i] = constantDelta[i];
+			}
+			cout << "For object " << i << ": " << delta[i] << endl;
+		}
+	}
 
 	// Display the cylinder (by default) along the 
 	// positive Z-axis with the origin at the bottom center
@@ -315,7 +403,7 @@ namespace
 
 					// nose
 					glPushMatrix();
-						glTranslatef(0.0, NECK_HEIGHT - HEAD_RADIUS, HEAD_RADIUS);
+						glTranslatef(0.0, 0.0, HEAD_RADIUS);
 						glRotatef(theta[LIMB_NOSE], 0.0, 1.0, 0.0);
 						display_nose();
 					glPopMatrix();
@@ -373,17 +461,17 @@ namespace
 		// right leg
 		glPushMatrix();
 			glTranslatef(-TORSO_RADIUS + UPPER_LEG_RADIUS, 0.0, 0.0);
-			glRotatef(-theta[LIMB_UPPER_LEFT_LEG], 1.0, 0.0, 0.0);
+			glRotatef(-theta[LIMB_UPPER_RIGHT_LEG], 1.0, 0.0, 0.0);
 			display_upper_left_leg();
 
 			glPushMatrix();
 				glTranslatef(0.0, -UPPER_LEG_LENGTH, 0.0);
-				glRotatef(theta[LIMB_LOWER_LEFT_LEG], 1.0, 0.0, 0.0);
+				glRotatef(theta[LIMB_LOWER_RIGHT_LEG], 1.0, 0.0, 0.0);
 				display_lower_left_leg();
 				// right foot
 				glPushMatrix();
 					glTranslatef(0.0, -LOWER_LEG_LENGTH, FOOT_RADIUS);
-					glRotatef(theta[LIMB_LEFT_FOOT], 1.0, 0.0, 0.0);
+					glRotatef(theta[LIMB_RIGHT_FOOT], 1.0, 0.0, 0.0);
 					display_right_foot();
 				glPopMatrix();
 			glPopMatrix();
@@ -451,6 +539,19 @@ void keyboardDown(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
+	case '0':
+		setPose0();
+		break;
+	case '1':
+		setPose1();
+		break;
+	case '2':
+		setPose2();
+		break;
+	case 'f':
+		setPose0_1();
+		key = 1;
+		break;
 	case 27: // on [ESC]
 		exit(0); // normal exit
 		break;
@@ -462,17 +563,19 @@ void idle ()
 {
 	double waste_time; // in seconds
 
+
 	for (int i = 0; i < LIMBCOUNT; i++)
 	{
 		theta[i] += delta[i];
-		if ((theta[i] > 45.0) || (theta[i] < 0.0))
+		if ((theta[i] > MAX[i]) || (theta[i] < MIN[i]))
 			delta[i] = -delta[i];
 	}
+	
 
 	// wait until time for next frame
 	waste_time = (g_next_frame_time - glutGet(GLUT_ELAPSED_TIME)) / 1000.0;
 	if(SHOW_FPS)
-		std::cout << "Waste time in frame =  " << waste_time << " seconds " << std::endl;
+		//std::cout << "Waste time in frame =  " << waste_time << " seconds " << std::endl;
 	if(waste_time > 0.0)
 		sleep(waste_time);
 
