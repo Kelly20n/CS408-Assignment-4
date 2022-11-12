@@ -34,7 +34,6 @@ namespace
 	const unsigned int TARGET_FPS = 40;
 	double g_fps = TARGET_FPS;
 	int g_next_frame_time = 0;
-	int key = 0;
 	const bool SHOW_FPS = true;
 
 	const double NEAR_CLIP = 0.01;
@@ -84,105 +83,96 @@ namespace
 	{
 		 0.0, 30.0, 30.0, 20.0, 
 		 20.0, 10.0, 11.0, 11.0, 21.0, 21.0, 15.0, 45.0, 45.0, 15.0, 15.0, 10.0
-
 	};
-
+	// Variable Transformation values for pose 0
 	float pose0[LIMBCOUNT] =
 	{
 		0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 	};
-
+	// Variable Transformation values for pose 1
 	float pose1[LIMBCOUNT] =
 	{
 		0.0, 0.0, 90.0, -90.0f, 
 		0.0, 45.0, 0.0, 0.0, 0.0, 90.0, -90.0f, 0.0, 0.0, 0.0, 0.0, 0.0
 	};
-
+	// Variable Transformation values for pose 2
 	float pose2[LIMBCOUNT] =
 	{
 		0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 90.0, 90.0, 0.0, 0.0, 0.0, 45.0, 0.0, 0.0, 0.0
 	};
-
-	// amount by which each bone rotates per frame (in degrees)
-	/*float delta[LIMBCOUNT] =
+	// Variable Transformation values for pose 3
+	float pose3[LIMBCOUNT] =
 	{
-		0.2f, 0.4f, 0.6f, 0.8f, 
-		1.2f, 1.6f, 2.0f, 0.8f, 1.2f, 1.6f, 2.0f, 1.0f, 1.0f, 0.6f, 0.8f, 0.8f
-	};*/
-
-	float constantDelta[LIMBCOUNT] =
-	{
-		0.2f, 1.2f, 1.2f, 0.8f,
-		0.8f, 0.4f, 1.0f, 1.0f, 1.6f, 1.6f, 0.6f, 1.0f, 1.0f, 0.8f, 0.8f, 0.6f
+		0.0, 0.0, 0.0, 0.0, 
+		15.0, 40.0f, 0.0, 0.0, 0.0, 135.0f, -25.0f, 0.0, 0.0, 0.0, 0.0, 0.0
 	};
 
+	// amount by which each bone rotates per frame (in degrees)
 	float delta[LIMBCOUNT] =
 	{
 		0.2f, 1.2f, 1.2f, 0.8f, 
 		0.8f, 0.4f, 1.0f, 1.0f, 1.6f, 1.6f, 0.6f, 1.0f, 1.0f, 0.8f, 0.8f, 0.6f
 	};
-
+	// Values for maximum possible movement the joints can move
 	float MAX[LIMBCOUNT] =
 	{
 		0, 160, 160, 90, 90, 
 		70, 90, 90, 135, 135, 90, 45, 45, 0, 0, 0
 	};
-
+	// Values for minimum possible movement the joints can move
 	float MIN[LIMBCOUNT] =
 	{
 		0, -45, -45, -90, -90, 
 		-70, 0, 0, 0, 0, -90, -10, -10, 0, 0, 0
 	};
-
-	void setPose0()
+	// Caculate the change in theta that happens each frame
+	// Takes two arrays and outputs 0 if the difference between the two is 0, negative value if the difference between the first and second is above 0 
+	void calculateDelta(float array1[], float array2[])
 	{
 		for (int i = 0; i < LIMBCOUNT; i++)
 		{
-			theta[i] = pose0[i];
-			delta[i] = 0.0;
-		}
-	}
-
-	void setPose1()
-	{
-		for (int i = 0; i < LIMBCOUNT; i++)
-		{
-			theta[i] = pose1[i];
-			delta[i] = 0.0;
-		}
-	}
-
-	void setPose2()
-	{
-		for (int i = 0; i < LIMBCOUNT; i++)
-		{
-			theta[i] = pose2[i];
-			delta[i] = 0.0;
-		}
-	}
-
-	void setPose0_1()
-	{
-		for (int i = 0; i < LIMBCOUNT; i++)
-		{
-			theta[i] = pose0[i];
-			MIN[i] = pose0[i];
-			MAX[i] = pose1[i];
-			if (pose0[i] - pose1[i] == 0)
+			if (array1[i] - array2[i] == 0)
 			{
 				delta[i] = 0;
 			}
-			else if (pose0[i] - pose1[i] > 0)
+			else if (array1[i] - array2[i] > 0)
 			{
-				delta[i] = -constantDelta[i];
+				delta[i] = -((array1[i] - array2[i]) / 60);
 			}
 			else
 			{
-				delta[i] = constantDelta[i];
+				delta[i] = (array1[i] - array2[i]) / 60;
 			}
-			cout << "For object " << i << ": " << delta[i] << endl;
+		}
+	}
+	// Used to show the poses taking one of the pose arrays
+	void setPose(float array1[])
+	{
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = array1[i];
+			delta[i] = 0.0;
+		}
+	}
+	// Used to show the animation between poses, taking the initial pose and the final pose arrays
+	void setPoseTransformation(float array1[], float array2[])
+	{
+		calculateDelta(array1, array2);
+		for (int i = 0; i < LIMBCOUNT; i++)
+		{
+			theta[i] = array1[i];
+			if (array1[i] > array2[i])
+			{
+				MIN[i] = array2[i];
+				MAX[i] = array1[i];
+			}
+			else
+			{
+				MIN[i] = array1[i];
+				MAX[i] = array2[i];
+			}	
 		}
 	}
 
@@ -537,20 +527,29 @@ void init ()
 
 void keyboardDown(unsigned char key, int x, int y)
 {
+	// User input decides what poses to display
 	switch (key)
 	{
 	case '0':
-		setPose0();
+		setPose(pose0);
 		break;
 	case '1':
-		setPose1();
+		setPose(pose1);
 		break;
 	case '2':
-		setPose2();
+		setPose(pose2);
+		break;
+	case '3':
+		setPose(pose3);
 		break;
 	case 'f':
-		setPose0_1();
-		key = 1;
+		setPoseTransformation(pose0, pose1);
+		break;
+	case 'b':
+		setPoseTransformation(pose0, pose2);
+		break;
+	case 'g':
+		setPoseTransformation(pose0, pose3);
 		break;
 	case 27: // on [ESC]
 		exit(0); // normal exit
